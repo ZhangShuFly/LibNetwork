@@ -12,6 +12,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 
 /**
+ * URL数据读取类
  * Created by zs .
  */
 

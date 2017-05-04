@@ -3,6 +3,7 @@ package com.ilyzs.libnetwork.volley;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.android.volley.Cache;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 /**
+ * volley帮助类
  * Created by zs .
  */
 
@@ -30,7 +32,6 @@ public class VolleyHelper {
         Response.Listener successLister = getSuccessListener(callback);
         Response.ErrorListener errorListener = getErrorListener(callback);
         JsonObjectRequestVolley jorv = new JsonObjectRequestVolley(url, parseParameter(rpList), successLister, errorListener);
-        //jorv.setTag();
         Volley.newRequestQueue(context).add(jorv);
     }
 
@@ -38,7 +39,6 @@ public class VolleyHelper {
         Response.Listener successLister = getSuccessListener(callback);
         Response.ErrorListener errorListener = getErrorListener(callback);
         JsonObjectRequestVolley jorv = new JsonObjectRequestVolley(Request.Method.POST,url, parseParameter(rpList), successLister, errorListener);
-        //jorv.setTag();
         Volley.newRequestQueue(context).add(jorv);
     }
 

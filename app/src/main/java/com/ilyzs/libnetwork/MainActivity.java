@@ -7,9 +7,6 @@ import android.widget.TextView;
 
 import com.ilyzs.libnetwork.util.HttpUtil;
 import com.ilyzs.libnetwork.util.RequestCallback;
-import com.ilyzs.libnetwork.util.URLData;
-import com.ilyzs.libnetwork.util.URLDataManager;
-import com.ilyzs.libnetwork.volley.AppBaseActivity;
 
 
 public class MainActivity extends AppBaseActivity {
@@ -56,5 +53,10 @@ public class MainActivity extends AppBaseActivity {
     @Override
     public void loadData() {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
+ * 网络请求的参数
  * Created by zs .
  */
 

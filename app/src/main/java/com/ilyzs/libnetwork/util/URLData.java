@@ -1,6 +1,7 @@
 package com.ilyzs.libnetwork.util;
 
 /**
+ * url数据bean
  * Created by zs .
  */
 
