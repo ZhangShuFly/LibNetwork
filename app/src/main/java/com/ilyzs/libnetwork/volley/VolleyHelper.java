@@ -9,9 +9,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.ilyzs.libnetwork.AppBaseActivity;
 import com.ilyzs.libnetwork.util.RequestCallback;
+import com.ilyzs.libnetwork.util.RequestManagerInterface;
 import com.ilyzs.libnetwork.util.RequestParameter;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -28,18 +31,20 @@ public class VolleyHelper {
         this.context = context;
     }
 
-    public void doHttpGet(String url, List<RequestParameter> rpList, final RequestCallback callback) {
+    public void doHttpGetJsonObject(RequestManagerInterface rmi,String url, List<RequestParameter> rpList, final RequestCallback callback) {
         Response.Listener successLister = getSuccessListener(callback);
         Response.ErrorListener errorListener = getErrorListener(callback);
         JsonObjectRequestVolley jorv = new JsonObjectRequestVolley(url, parseParameter(rpList), successLister, errorListener);
-        Volley.newRequestQueue(context).add(jorv);
+        RequestManagerVolleyImpl rmvi = (RequestManagerVolleyImpl) rmi;
+        rmvi.addRequestQuneue(jorv);
     }
 
-    public void doHttpPost(String url, List<RequestParameter> rpList, final RequestCallback callback) {
+    public void doHttpPostJsonObject(RequestManagerInterface rmi,String url, List<RequestParameter> rpList, final RequestCallback callback) {
         Response.Listener successLister = getSuccessListener(callback);
         Response.ErrorListener errorListener = getErrorListener(callback);
         JsonObjectRequestVolley jorv = new JsonObjectRequestVolley(Request.Method.POST,url, parseParameter(rpList), successLister, errorListener);
-        Volley.newRequestQueue(context).add(jorv);
+        RequestManagerVolleyImpl rmvi = (RequestManagerVolleyImpl) rmi;
+        rmvi.addRequestQuneue(jorv);
     }
 
     @NonNull
@@ -65,9 +70,15 @@ public class VolleyHelper {
     }
     private JSONObject parseParameter(List<RequestParameter> rpList) {
         JSONObject jo = new JSONObject();
-        if(null!=rpList){
+        if(null!=rpList && !rpList.isEmpty()){
             for (RequestParameter rp : rpList) {
-
+                if(null!=rp.getValue() && null!=rp.getName()){
+                    try {
+                        jo.put(rp.getName(),rp.getValue());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         return jo;

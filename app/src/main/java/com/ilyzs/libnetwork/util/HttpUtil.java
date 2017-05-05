@@ -1,10 +1,8 @@
 package com.ilyzs.libnetwork.util;
 
-import android.app.Activity;
 import android.content.Context;
 
-import com.ilyzs.libnetwork.AppBaseActivity;
-import com.ilyzs.libnetwork.MainActivity;
+import com.ilyzs.libnetwork.okHttp.OkHttpHelper;
 import com.ilyzs.libnetwork.volley.VolleyHelper;
 
 import java.util.List;
@@ -18,7 +16,7 @@ public class HttpUtil {
 
     private static volatile HttpUtil httpUtil;
 
-    public static HttpUtil getInstance(){
+    private static HttpUtil getInstance(){
         synchronized (HttpUtil.class) {
             if (null == httpUtil) {
                 httpUtil = new HttpUtil();
@@ -27,22 +25,30 @@ public class HttpUtil {
         return httpUtil;
     }
 
-    public void doHttp(Context context, String urlKey, List<RequestParameter> parameter, RequestCallback callback){
+    public static void doHttp(RequestManagerInterface rmi,Context context, String urlKey, List<RequestParameter> parameter, RequestCallback callback){
+        if("OKHttp".equals(ConfigUtil.netType)){
+            getInstance().doOkHttpHttp(rmi,context,urlKey,parameter,callback);
+        } else{
+            getInstance().doVolleyHttp(rmi,context,urlKey,parameter,callback);
+        }
+    }
+
+    private void doVolleyHttp(RequestManagerInterface rmi,Context context, String urlKey, List<RequestParameter> parameter, RequestCallback callback){
         URLData urlData = URLDataManager.findURL(context,urlKey);
-        ((AppBaseActivity)context).rmi.addRequest(urlData.getUrl());
         if("post".equals(urlData.getNetType())){
-           doHttpPost(context,urlData.getUrl(),parameter,callback);
-       }else{
-           doHttpGet(context,urlData.getUrl(),parameter,callback);
-       }
+            new VolleyHelper(context).doHttpPostJsonObject(rmi,urlData.getUrl(),parameter,callback);
+        }else{
+            new VolleyHelper(context).doHttpGetJsonObject(rmi,urlData.getUrl(),parameter,callback);
+        }
     }
 
-    public void doHttpGet(Context context, String url, List<RequestParameter> parameter, RequestCallback callback){
-        new VolleyHelper(context).doHttpGet(url,parameter,callback);
-    }
-
-    public  void doHttpPost(Context context,String url,List<RequestParameter> parameter, RequestCallback callback){
-        new VolleyHelper(context).doHttpPost(url,parameter,callback);
+    private void doOkHttpHttp(RequestManagerInterface rmi,Context context, String urlKey, List<RequestParameter> parameter, RequestCallback callback){
+        URLData urlData = URLDataManager.findURL(context,urlKey);
+        if("post".equals(urlData.getNetType())){
+            OkHttpHelper.doHttpPost(rmi,urlData.getUrl(),parameter,callback);
+        }else{
+            OkHttpHelper.doHttpGet(rmi,urlData.getUrl(),parameter,callback);
+        }
     }
 
 }

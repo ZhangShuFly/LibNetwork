@@ -27,7 +27,7 @@ public class URLDataManager {
                     case XmlPullParser.START_DOCUMENT:
                         break;
                     case XmlPullParser.START_TAG:
-                        if("node".equals(xrp.getName())){
+                        if("node".equals(xrp.getName()) && key.equals(xrp.getAttributeValue(null,"key"))){
                             urlData.setExpires(Long.parseLong(xrp.getAttributeValue(null,"expires")));
                             urlData.setKey(xrp.getAttributeValue(null,"key"));
                             urlData.setNetType(xrp.getAttributeValue(null,"netType"));

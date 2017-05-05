@@ -1,5 +1,7 @@
 package com.ilyzs.libnetwork.util;
 
+import com.android.volley.Request;
+
 /**
  * 管理请求的接口，用于取消请求
  * Created by zs.
@@ -8,6 +10,6 @@ package com.ilyzs.libnetwork.util;
 public interface RequestManagerInterface {
 
     public void  addRequest(Object tag);
-    public void  cancleRequest(Object tag);
-    public void  cancleAllRequest();
+    public void  cancelRequest(Object tag);
+    public void  cancelAllRequest();
 }

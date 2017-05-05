@@ -15,7 +15,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/volley" />
-
+    <Button
+        android:id="@+id/main_okHttp_test_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/main_volley_test_btn"
+        android:text="@string/okHttp" />
 
     <TextView
         android:id="@+id/main_result_tv"

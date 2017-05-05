@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">LibNetwork</string>
     <string name="volley">Volley Test</string>
+    <string name="okHttp">OkHttp Test</string>
 </resources>
