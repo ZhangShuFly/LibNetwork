@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import com.ilyzs.libnetwork.util.RequestCallback;
 import com.ilyzs.libnetwork.util.RequestManagerInterface;
 import com.ilyzs.libnetwork.util.RequestParameter;
+import com.ilyzs.libnetwork.util.URLData;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,21 +46,19 @@ public class OkHttpHelper {
         return okHttpHelper;
     }
 
-    public static OkHttpClient getOkHttpClient(){
-        return getInstance().okHttpClient;
-    }
-
     /**
      * 异步请求get
      */
-    public static void doHttpGet(RequestManagerInterface rmi,String url, List<RequestParameter> rpList, RequestCallback callback) {
+    public static void doHttpGet(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, RequestCallback callback) {
+        String url = urlData.getUrl();
         getInstance().inner_doHttpGet(rmi,url,rpList,callback);
     }
 
     /**
      * 异步请求post
      */
-    public static void doHttpPost(RequestManagerInterface rmi,String url, List<RequestParameter> rpList, RequestCallback callback) {
+    public static void doHttpPost(RequestManagerInterface rmi,URLData urlData, List<RequestParameter> rpList, RequestCallback callback) {
+        String url = urlData.getUrl();
         getInstance().inner_doHttpPost(rmi,url,rpList,callback);
     }
 
@@ -69,6 +68,8 @@ public class OkHttpHelper {
         Call call = okHttpClient.newCall(request);
         call.enqueue( getResponseCallback(callback));
 
+        RequestManagerOkHttpImpl rmoi = (RequestManagerOkHttpImpl)rmi;
+        rmoi.addRequestQuneue(call);
     }
 
     private void inner_doHttpPost(RequestManagerInterface rmi,String url, List<RequestParameter> rpList, final RequestCallback callback) {
@@ -76,6 +77,7 @@ public class OkHttpHelper {
         final  Request request = new Request.Builder().url(url).post(requestBody).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(getResponseCallback(callback));
+
         RequestManagerOkHttpImpl rmoi = (RequestManagerOkHttpImpl)rmi;
         rmoi.addRequestQuneue(call);
     }

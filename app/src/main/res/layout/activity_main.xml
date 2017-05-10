@@ -21,6 +21,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/main_volley_test_btn"
         android:text="@string/okHttp" />
+    <Button
+        android:id="@+id/main_retrofit_test_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/main_okHttp_test_btn"
+        android:text="@string/retrofit" />
 
     <TextView
         android:id="@+id/main_result_tv"

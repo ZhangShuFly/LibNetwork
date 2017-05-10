@@ -13,11 +13,14 @@ import com.ilyzs.libnetwork.AppBaseActivity;
 import com.ilyzs.libnetwork.util.RequestCallback;
 import com.ilyzs.libnetwork.util.RequestManagerInterface;
 import com.ilyzs.libnetwork.util.RequestParameter;
+import com.ilyzs.libnetwork.util.URLData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+
+import retrofit2.http.Url;
 
 /**
  * volley帮助类
@@ -31,18 +34,22 @@ public class VolleyHelper {
         this.context = context;
     }
 
-    public void doHttpGetJsonObject(RequestManagerInterface rmi,String url, List<RequestParameter> rpList, final RequestCallback callback) {
+    public void doHttpGetJsonObject(RequestManagerInterface rmi,URLData urlData, List<RequestParameter> rpList, final RequestCallback callback) {
+        String url = urlData.getUrl();
         Response.Listener successLister = getSuccessListener(callback);
         Response.ErrorListener errorListener = getErrorListener(callback);
         JsonObjectRequestVolley jorv = new JsonObjectRequestVolley(url, parseParameter(rpList), successLister, errorListener);
+
         RequestManagerVolleyImpl rmvi = (RequestManagerVolleyImpl) rmi;
         rmvi.addRequestQuneue(jorv);
     }
 
-    public void doHttpPostJsonObject(RequestManagerInterface rmi,String url, List<RequestParameter> rpList, final RequestCallback callback) {
+    public void doHttpPostJsonObject(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, final RequestCallback callback) {
+        String url = urlData.getUrl();
         Response.Listener successLister = getSuccessListener(callback);
         Response.ErrorListener errorListener = getErrorListener(callback);
         JsonObjectRequestVolley jorv = new JsonObjectRequestVolley(Request.Method.POST,url, parseParameter(rpList), successLister, errorListener);
+
         RequestManagerVolleyImpl rmvi = (RequestManagerVolleyImpl) rmi;
         rmvi.addRequestQuneue(jorv);
     }

@@ -9,14 +9,18 @@ import com.ilyzs.libnetwork.okHttp.RequestManagerOkHttpImpl;
 import com.ilyzs.libnetwork.util.ConfigUtil;
 import com.ilyzs.libnetwork.util.HttpUtil;
 import com.ilyzs.libnetwork.util.RequestCallback;
+import com.ilyzs.libnetwork.util.RequestParameter;
 import com.ilyzs.libnetwork.volley.RequestManagerVolleyImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppBaseActivity {
 
-    private Button volleyBtn,okHttpBtn;
+    private Button volleyBtn,okHttpBtn,retrofitBtn;
     private TextView resultTv;
-
+    private List parameterList = new ArrayList();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +37,7 @@ public class MainActivity extends AppBaseActivity {
         resultTv = (TextView) findViewById(R.id.main_result_tv);
         volleyBtn = (Button) findViewById(R.id.main_volley_test_btn);
         okHttpBtn = (Button)findViewById(R.id.main_okHttp_test_btn);
+        retrofitBtn = (Button)findViewById(R.id.main_retrofit_test_btn);
 
         volleyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,17 +80,36 @@ public class MainActivity extends AppBaseActivity {
                 });
             }
         });
+
+        retrofitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeNetType("Retrofit");
+                waitDialogShow();
+
+                RequestParameter parameter = new RequestParameter();
+                parameter.setName("citykey");
+                parameter.setValue("101010100");
+                parameterList.add(parameter);
+
+                HttpUtil.doHttp(rmi,MainActivity.this, "getWeatherRetrofit", parameterList, new RequestCallback() {
+                    @Override
+                    public void onSuccess(String content) {
+                        waitDialogDismiss();
+                        resultTv.setText(content);
+                    }
+
+                    @Override
+                    public void onFail(String failMsg) {
+                        waitDialogDismiss();
+                        resultTv.setText(failMsg);
+                    }
+                });
+            }
+        });
+
     }
 
-    private void changeNetType(String netType){
-        ConfigUtil.netType = netType;
-        rmi.cancelAllRequest();
-        if("OKHttp".equals(netType)){
-            rmi = new RequestManagerOkHttpImpl();
-        }else{
-            rmi = new RequestManagerVolleyImpl(this);
-        }
-    }
 
     @Override
     public void loadData() {

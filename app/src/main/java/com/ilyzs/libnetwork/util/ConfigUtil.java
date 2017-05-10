@@ -6,7 +6,7 @@ package com.ilyzs.libnetwork.util;
 
 public class ConfigUtil {
     /**
-     * Volley , OKHttp
+     * Volley , OKHttp,Retrofit
      */
     public static  String netType = "Volley";
 }

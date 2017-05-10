@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.ilyzs.libbase.BaseActivity;
 import com.ilyzs.libnetwork.okHttp.RequestManagerOkHttpImpl;
+import com.ilyzs.libnetwork.retrofit.RequestManagerRetrofitImpl;
 import com.ilyzs.libnetwork.util.ConfigUtil;
 import com.ilyzs.libnetwork.util.RequestManagerInterface;
 import com.ilyzs.libnetwork.volley.RequestManagerVolleyImpl;
@@ -18,16 +19,28 @@ public abstract class AppBaseActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if("OKHttp".equals(ConfigUtil.netType)){
-            rmi = new RequestManagerOkHttpImpl();
-        }else{
-            rmi = new RequestManagerVolleyImpl(this);
-        }
+        changeNetType(ConfigUtil.netType);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        rmi.cancelAllRequest();
+        if(null!=rmi){
+            rmi.cancelAllRequest();
+        }
+    }
+
+    protected void changeNetType(String netType){
+        ConfigUtil.netType = netType;
+        if(null!=rmi){
+            rmi.cancelAllRequest();
+        }
+        if("OKHttp".equals(ConfigUtil.netType)){
+            rmi = new RequestManagerOkHttpImpl();
+        }else if("Retrofit".equals(ConfigUtil.netType)){
+            rmi = new RequestManagerRetrofitImpl();
+        }else{
+            rmi = new RequestManagerVolleyImpl(this);
+        }
     }
 }
