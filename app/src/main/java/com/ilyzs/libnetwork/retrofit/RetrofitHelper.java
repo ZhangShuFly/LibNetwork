@@ -1,5 +1,6 @@
 package com.ilyzs.libnetwork.retrofit;
 
+import android.os.Environment;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
@@ -9,13 +10,13 @@ import com.ilyzs.libnetwork.util.RequestManagerInterface;
 import com.ilyzs.libnetwork.util.RequestParameter;
 import com.ilyzs.libnetwork.util.URLData;
 
+import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -32,50 +33,57 @@ public class RetrofitHelper {
 
     private static RetrofitHelper retrofitHelper;
     private Retrofit retrofit;
-    private static String baseUrl = "";
-    private RetrofitHelper(String url){
-        if(url.length()<7){
-            return;
-        }
-        baseUrl = url.substring(0,url.indexOf("/",7)+1);
+    private static String baseUrl = "http://wthrcdn.etouch.cn/";
+    private RetrofitHelper(URLData urlData){
         Gson gson = new GsonBuilder().setLenient().create();
         retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create(gson)).build();
     }
 
-    private static RetrofitHelper getInstance(final  String url){
+    private static RetrofitHelper getInstance(final  URLData urlData){
         synchronized (RetrofitHelper.class){
-            if(null==retrofitHelper || !url.contains(baseUrl)){
-                retrofitHelper = new RetrofitHelper(url);
+            if(null==retrofitHelper){
+                retrofitHelper = new RetrofitHelper(urlData);
             }
         }
         return retrofitHelper;
     }
 
-    public static void doHttp(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, RequestCallback callback) {
-        String url = urlData.getUrl();
-        RetrofitHelper instance =  getInstance(url);
+    public static void doHttpGet(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, RequestCallback callback) {
+        RetrofitHelper instance =  getInstance(urlData);
         if(null!=instance)
-            instance.inner_doHttp(rmi,urlData.getKey(),rpList,callback);
+            instance.inner_doHttpGet(rmi,urlData,rpList,callback);
     }
 
+    public static void doHttpPost(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, RequestCallback callback) {
+        RetrofitHelper instance =  getInstance(urlData);
+        if(null!=instance)
+            instance.inner_doHttpPost(rmi,urlData,rpList,callback);
+    }
 
-    private void inner_doHttp(RequestManagerInterface rmi, String urlKey, List<RequestParameter> rpList, final RequestCallback callback) {
-        String methodName = urlKey;
+    public  void uploadFile(RequestManagerInterface rmi, URLData urlData,List<RequestParameter> rpList,RequestCallback callback){
         RetrofitUrlApi urlApi = retrofit.create(RetrofitUrlApi.class);
-        try {
-            Method method = urlApi.getClass().getMethod(methodName,new Class[]{Map.class});
-            Call<ResponseBody> call =  (Call<ResponseBody>) method.invoke(urlApi,parseParameter(rpList));
-            call.enqueue(getReponseCallback(callback));
+        String url = urlData.getUrl();
+        File file = new File(Environment.getExternalStorageDirectory(), "ic_launcher.png");
+        RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/png"), file);
+        Call<ResponseBody> call = urlApi.uploadFile(url, photoRequestBody);
+    }
 
-            RequestManagerRetrofitImpl rmoi = (RequestManagerRetrofitImpl)rmi;
-            rmoi.addRequestQuneue(call);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.getTargetException().printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    private void inner_doHttpGet(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, final RequestCallback callback) {
+        RetrofitUrlApi urlApi = retrofit.create(RetrofitUrlApi.class);
+        String url = urlData.getUrl();
+        Call<ResponseBody> call =  urlApi.getCommonByUrl(url,parseParameter(rpList));
+        call.enqueue(getReponseCallback(callback));
+        RequestManagerRetrofitImpl rmoi = (RequestManagerRetrofitImpl)rmi;
+        rmoi.addRequestQuneue(call);
+    }
+
+    private void inner_doHttpPost(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, final RequestCallback callback) {
+        RetrofitUrlApi urlApi = retrofit.create(RetrofitUrlApi.class);
+        String url = urlData.getUrl();
+        Call<ResponseBody> call =  urlApi.postCommonByUrl(url,parseParameter(rpList));
+        call.enqueue(getReponseCallback(callback));
+        RequestManagerRetrofitImpl rmoi = (RequestManagerRetrofitImpl)rmi;
+        rmoi.addRequestQuneue(call);
     }
 
     @NonNull

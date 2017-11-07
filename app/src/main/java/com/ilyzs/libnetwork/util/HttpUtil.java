@@ -38,7 +38,11 @@ public class HttpUtil {
 
     private void doRetrofitHttp(RequestManagerInterface rmi,Context context, String urlKey, List<RequestParameter> parameter, RequestCallback callback){
         URLData urlData = URLDataManager.findURL(context,urlKey);
-        RetrofitHelper.doHttp(rmi,urlData,parameter,callback);
+        if("post".equals(urlData.getNetType())){
+            RetrofitHelper.doHttpPost(rmi,urlData,parameter,callback);
+        }else{
+            RetrofitHelper.doHttpGet(rmi,urlData,parameter,callback);
+        }
     }
 
     private void doVolleyHttp(RequestManagerInterface rmi,Context context, String urlKey, List<RequestParameter> parameter, RequestCallback callback){
