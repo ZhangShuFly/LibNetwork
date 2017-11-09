@@ -1,10 +1,10 @@
 package com.ilyzs.libnetwork.retrofit;
 
-import android.database.Observable;
 
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -53,7 +53,7 @@ public interface RetrofitUrlApi {
      * @return
      */
     @GET
-    Call<ResponseBody> getCommonByUrl(@Url String url,@QueryMap Map<String, Object> map);
+    Observable<Object> getCommonByUrl(@Url String url, @QueryMap Map<String, Object> map);
 
     /**
      * 参数不固定的post请求方法 ：使用全路径复写baseUrl，适用于非统一baseUrl的场景。
@@ -63,7 +63,7 @@ public interface RetrofitUrlApi {
      */
     @FormUrlEncoded
     @POST
-    Call<ResponseBody> postCommonByUrl( @Url String url,@FieldMap Map<String,Object> map);
+    Observable<Object> postCommonByUrl( @Url String url,@FieldMap Map<String,Object> map);
 
     /**
      * 上传单张图片

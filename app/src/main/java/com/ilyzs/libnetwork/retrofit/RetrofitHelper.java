@@ -9,6 +9,7 @@ import com.ilyzs.libnetwork.util.RequestCallback;
 import com.ilyzs.libnetwork.util.RequestManagerInterface;
 import com.ilyzs.libnetwork.util.RequestParameter;
 import com.ilyzs.libnetwork.util.URLData;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -36,7 +42,7 @@ public class RetrofitHelper {
     private static String baseUrl = "http://wthrcdn.etouch.cn/";
     private RetrofitHelper(URLData urlData){
         Gson gson = new GsonBuilder().setLenient().create();
-        retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create(gson)).build();
+        retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create(gson)).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
     }
 
     private static RetrofitHelper getInstance(final  URLData urlData){
@@ -71,19 +77,24 @@ public class RetrofitHelper {
     private void inner_doHttpGet(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, final RequestCallback callback) {
         RetrofitUrlApi urlApi = retrofit.create(RetrofitUrlApi.class);
         String url = urlData.getUrl();
-        Call<ResponseBody> call =  urlApi.getCommonByUrl(url,parseParameter(rpList));
-        call.enqueue(getReponseCallback(callback));
+        Observable observable =  urlApi.getCommonByUrl(url,parseParameter(rpList));
+
+        RObserver observer = new RObserver(callback);
+        observable.subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
         RequestManagerRetrofitImpl rmoi = (RequestManagerRetrofitImpl)rmi;
-        rmoi.addRequestQuneue(call);
+        rmoi.addRequestQuneue(observer.disposable);
     }
+
 
     private void inner_doHttpPost(RequestManagerInterface rmi, URLData urlData, List<RequestParameter> rpList, final RequestCallback callback) {
         RetrofitUrlApi urlApi = retrofit.create(RetrofitUrlApi.class);
         String url = urlData.getUrl();
-        Call<ResponseBody> call =  urlApi.postCommonByUrl(url,parseParameter(rpList));
-        call.enqueue(getReponseCallback(callback));
+        Observable observable =  urlApi.postCommonByUrl(url,parseParameter(rpList));
+
+        RObserver observer = new RObserver(callback);
+        observable.subscribeOn(io.reactivex.schedulers.Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
         RequestManagerRetrofitImpl rmoi = (RequestManagerRetrofitImpl)rmi;
-        rmoi.addRequestQuneue(call);
+        rmoi.addRequestQuneue(observer.disposable);
     }
 
     @NonNull
@@ -118,4 +129,34 @@ public class RetrofitHelper {
         }
         return map;
     }
+
+    private class RObserver implements Observer {
+        public Disposable disposable;
+        private RequestCallback callback;
+
+        public   RObserver (RequestCallback callback){
+            this.callback = callback;
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            disposable = d;
+        }
+
+        @Override
+        public void onNext(Object o) {
+            callback.onSuccess(o.toString());
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            callback.onFail(e.getMessage());
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+    };
+
 }
