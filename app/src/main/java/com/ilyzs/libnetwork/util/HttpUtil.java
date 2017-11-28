@@ -26,6 +26,14 @@ public class HttpUtil {
         return httpUtil;
     }
 
+    /**
+     * 网络请求入口
+     * @param rmi 请求统一管理类
+     * @param context
+     * @param urlKey    url的key参数，根据它获取url
+     * @param parameter  参数
+     * @param callback   回调
+     */
     public static void doHttp(RequestManagerInterface rmi,Context context, String urlKey, List<RequestParameter> parameter, RequestCallback callback){
         if("OKHttp".equals(ConfigUtil.netType)){
             getInstance().doOkHttpHttp(rmi,context,urlKey,parameter,callback);
