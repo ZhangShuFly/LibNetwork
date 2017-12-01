@@ -10,39 +10,39 @@
 #---------------------------------2.第三方包-------------------------------
 
 #根据使用的第三方包，从github上复制下来
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep public class * extends com.bumptech.glide.module.AppGlideModule
--keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
-  **[] $VALUES;
-  public *;
-}
+#-keep public class * implements com.bumptech.glide.module.GlideModule
+#-keep public class * extends com.bumptech.glide.module.AppGlideModule
+#-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+#  **[] $VALUES;
+#  public *;
+#
 
 #本地包
--libraryjars log4j-1.2.17.jar
--dontwarn org.apache.log4j.**
--keep class  org.apache.log4j.** { *;}
+#-libraryjars log4j-1.2.17.jar
+#-dontwarn org.apache.log4j.**
+#-keep class  org.apache.log4j.** { *;}
 
 #-------------------------------------------------------------------------
 
 #---------------------------------3.与js互相调用的类------------------------
 
 #第三部分与js互调的类，工程中没有直接跳过。一般你可以这样写
--keep class 你的类所在的包.** { *; }
+#-keep class 你的类所在的包.** { *; }
 
 #如果是内部类的话，你可以这样
--keepclasseswithmembers class 你的类所在的包.父类$子类 { <methods>; }
+#-keepclasseswithmembers class 你的类所在的包.父类$子类 { <methods>; }
 
 #例如
--keepclasseswithmembers class com.demo.login.bean.ui.MainActivity$JSInterface {
-      <methods>;
-}
+#-keepclasseswithmembers class com.demo.login.bean.ui.MainActivity$JSInterface {
+#      <methods>;
+#}
 
 
 #-------------------------------------------------------------------------
 
 #---------------------------------4.反射相关的类和方法-----------------------
 #第四部分与反射有关的类
--keep class 你的类所在的包.** { *; }
+#-keep class 你的类所在的包.** { *; }
 
 #----------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------
